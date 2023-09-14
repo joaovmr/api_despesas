@@ -39,6 +39,8 @@ Além das variáveis padrão contidas no env.example.
 
 Para inicializar a api, entre no projeto e execute php artisan serve. A partir desse momento a aplicação estará rodando na porta 8000 do seu localhost.
 
+Lembre de executar as migrações antes
+
 Para a execução da aplicação consumidora do frontend, entre na pasta quasar-project e execute o comando yarn dev 9000 do seu localhost
 
 A aplicação foi construída usando boas práticas de Laravel. Para os processos de autenticação foi utilizada a biblioteca Sanctum.
@@ -49,7 +51,6 @@ Testes unitários foram implementados e podem ser executados através do comando
 
 Possíveis melhorias não implementadas por prioridade:
 
- - Validação dos campos do formulário de despesa no frontend
  - Validação dos campos do formulário de login no frontend
  - Validação dos campos do formulário de cadastro no frontend
  - Melhoria na estilização do projeto

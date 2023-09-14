@@ -48,10 +48,26 @@
     <q-form @submit="addDespesa" class="q-gutter-md">
       <div class="q-gutter-md row">
         <div class="col-3">
-          <q-input v-model="newDespesa.descricao" label="Descrição"></q-input>
+          <q-input
+            v-model="newDespesa.descricao"
+            label="Descrição"
+            :rules="[
+              (val) => val.length <= 191 || 'Insira no máximo 191 caracteres',
+            ]"
+          ></q-input>
         </div>
         <div class="col-3">
-          <q-input v-model="newDespesa.valor" label="Valor"></q-input>
+          <q-input
+            v-model="newDespesa.valor"
+            label="Valor"
+            mask="#"
+            reverse-fill-mask
+            :rules="[
+              (val) =>
+                (val !== null && val !== '' && parseInt(val) != NaN) ||
+                'Insira um valor',
+            ]"
+          ></q-input>
         </div>
         <div class="col-3">
           <q-input
@@ -59,6 +75,7 @@
             label="Data"
             mask="##/##/####"
             placeholder="dd/mm/yyyy"
+            :rules="[validateDateRule]"
           ></q-input>
         </div>
         <div class="col-2">
@@ -117,6 +134,11 @@ export default {
       ],
       editDialog: false,
       deleteDialog: false,
+      validationErrors: {
+        descricao: "",
+        valor: "",
+        data: "",
+      },
       editedDespesa: {
         id: null,
         name: "",
@@ -145,6 +167,29 @@ export default {
   },
 
   methods: {
+    validateDateRule(value) {
+      const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+      if (!datePattern.test(value)) {
+        return "Insira uma data válida (dd/mm/yyyy)";
+      }
+
+      const [, day, month, year] = value.match(datePattern);
+      const date = new Date(year, month - 1, day); 
+
+      if (
+        date instanceof Date &&
+        !isNaN(date) &&
+        date.getDate() === parseInt(day, 10) &&
+        date.getMonth() === parseInt(month, 10) - 1 && 
+        date.getFullYear() === parseInt(year, 10) &&
+        date <= new Date()
+      ) {
+        return true;
+      }
+
+      return "Insira uma data válida (dd/mm/yyyy)";
+    },
+
     async fetchDespesas() {
       try {
         const response = await api.get("/despesas");
@@ -164,16 +209,10 @@ export default {
     },
 
     confirmDelete() {
-      const authToken = localStorage.getItem("authToken");
-      const headers = {
-        Authorization: `Bearer ${authToken}`,
-      };
       if (this.selectedDespesa) {
         const despesaId = this.selectedDespesa.id;
         api
-          .delete(`/despesas/${despesaId}`, {
-            headers,
-          })
+          .delete(`/despesas/${despesaId}`)
           .then(() => {
             this.despesas = this.despesas.filter(
               (despesa) => despesa.id !== despesaId
@@ -194,14 +233,8 @@ export default {
       this.editDialog = true;
     },
     saveEditedDespesa() {
-      const authToken = localStorage.getItem("authToken");
-      const headers = {
-        Authorization: `Bearer ${authToken}`,
-      };
       api
-        .put(`/despesas/${this.editedDespesa.id}`, this.editedDespesa, {
-          headers,
-        })
+        .put(`/despesas/${this.editedDespesa.id}`, this.editedDespesa)
         .then(() => {
           const index = this.despesas.findIndex(
             (d) => d.id === this.editedDespesa.id
@@ -218,16 +251,12 @@ export default {
     },
 
     addDespesa() {
-      const authToken = localStorage.getItem("authToken");
-      const headers = {
-        Authorization: `Bearer ${authToken}`,
-      };
       const newDespesaData = {
         descricao: this.newDespesa.descricao,
         data: this.newDespesa.data,
         valor: parseFloat(this.newDespesa.valor),
       };
-      api.post("/despesas", newDespesaData, { headers }).then(() => {
+      api.post("/despesas", newDespesaData).then(() => {
         this.fetchDespesas.call(this);
 
         this.newDespesa = {
