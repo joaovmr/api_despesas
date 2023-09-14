@@ -84,7 +84,6 @@ export default {
         this.$router.push({ path: '/' });
         
       } catch (error) {
-        // Handle registration errors (e.g., display error messages)
         console.error(error);
       }
     },

@@ -70,10 +70,8 @@ export default {
     async login() {
       axios.defaults.withCredentials = true;
       try {
-        // First, get CSRF token
         await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie");
 
-        // Then, send the login request
         const response = await api.post(
           "/login",
           {

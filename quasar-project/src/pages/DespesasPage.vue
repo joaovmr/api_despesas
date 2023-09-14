@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- List Despesas -->
     <q-table :rows="formattedDespesas" row-key="id" :columns="columns">
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
@@ -9,11 +8,9 @@
         </q-td> </template
     ></q-table>
 
-    <!-- Edit Despesa Dialog -->
     <q-dialog v-model="editDialog" persistent>
       <q-card>
         <q-card-section>
-          <!-- Edit Despesa Form -->
           <q-form @submit="saveEditedDespesa">
             <q-input
               v-model="editedDespesa.descricao"
@@ -26,14 +23,12 @@
               mask="##/##/####"
               placeholder="dd/mm/yyyy"
             ></q-input>
-            <!-- Add more fields as needed -->
             <q-btn label="Salvar" type="submit"></q-btn>
           </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
 
-    <!-- Delete Confirmation Dialog -->
     <q-dialog v-model="deleteDialog" persistent>
       <q-card>
         <q-card-section>
@@ -50,7 +45,6 @@
       </q-card>
     </q-dialog>
 
-    <!-- Add New Despesa Form -->
     <q-form @submit="addDespesa" class="q-gutter-md">
       <div class="q-gutter-md row">
         <div class="col-3">
@@ -136,12 +130,8 @@ export default {
   },
   async created() {
     try {
-      const authToken = localStorage.getItem("authToken");
-      const headers = {
-        Authorization: `Bearer ${authToken}`,
-      };
+
       const response = await api.get("/despesas", {
-        headers,
       });
       this.despesas = response.data.data;
     } catch (error) {
@@ -153,11 +143,12 @@ export default {
       return this.despesas.map((despesa) => {
         return {
           ...despesa,
-          data: new Date(despesa.data).toLocaleDateString("pt-BR"), // Format to dd/mm/yyyy
+          data: new Date(new Date(despesa.data).setDate(new Date(despesa.data).getDate() + 1)).toLocaleDateString("pt-BR"),
         };
       });
     },
   },
+
   methods: {
     deleteDespesa(despesa) {
       this.selectedDespesa = despesa;
@@ -165,8 +156,8 @@ export default {
     },
 
     cancelDelete() {
-      this.selectedDespesa = null; // Clear the selected Despesa
-      this.deleteDialog = false; // Close the delete dialog
+      this.selectedDespesa = null;
+      this.deleteDialog = false;
     },
 
     confirmDelete() {
@@ -184,8 +175,8 @@ export default {
             this.despesas = this.despesas.filter(
               (despesa) => despesa.id !== despesaId
             );
-            this.selectedDespesa = null; // Clear the selected Despesa
-            this.deleteDialog = false; // Close the delete dialog
+            this.selectedDespesa = null;
+            this.deleteDialog = false;
           })
           .catch((error) => {
             console.error("Error deleting Despesa:", error);
@@ -196,12 +187,10 @@ export default {
       this.newDespesa.data = new Date(event.target.value);
     },
     editDespesa(despesa) {
-      // Open the edit dialog and populate editedDespesa with the selected Despesa data
       this.editedDespesa = { ...despesa };
       this.editDialog = true;
     },
     saveEditedDespesa() {
-      
       const authToken = localStorage.getItem("authToken");
       const headers = {
         Authorization: `Bearer ${authToken}`,
@@ -232,20 +221,18 @@ export default {
       };
       const newDespesaData = {
         descricao: this.newDespesa.descricao,
-        data: this.newDespesa.data, // Make sure it's a valid date
-        valor: parseFloat(this.newDespesa.valor), // Parse to a numeric value
+        data: this.newDespesa.data,
+        valor: parseFloat(this.newDespesa.valor),
       };
-      api
-        .post("http://127.0.0.1:8000/api/despesas", newDespesaData, { headers })
-        .then((response) => {
-          this.despesas.push(response.data);
+      api.post("/despesas", newDespesaData, { headers }).then((response) => {
+        this.despesas.push(response.data);
 
-          this.newDespesa = {
-            descricao: "",
-            data: null,
-            valor: null,
-          };
-        });
+        this.newDespesa = {
+          descricao: "",
+          data: null,
+          valor: null,
+        };
+      });
     },
   },
 };
