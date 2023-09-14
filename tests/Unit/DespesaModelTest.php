@@ -9,7 +9,6 @@ use Tests\TestCase;
 
 class DespesaModelTest extends TestCase
 {
-    use RefreshDatabase;
     public function test_can_create_despesa()
     {
         $despesaData = [
@@ -35,7 +34,7 @@ class DespesaModelTest extends TestCase
         $despesa = Despesa::create($despesaData);
 
         $updatedData = [
-            'descricao' => 'Updated Despesa',
+            'descricao' => 'UPdate Despesa',
             'data' => now()->subDay(),
             'valor' => 200.0,
         ];

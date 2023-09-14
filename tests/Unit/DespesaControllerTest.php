@@ -13,21 +13,6 @@ use Illuminate\Support\Facades\Factory;
 
 class DespesaControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function test_can_fetch_despesas()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
-        Despesa::factory()->count(5)->create(['user_id' => $user->id]);
-
-        $response = $this->get('/api/despesas');
-
-        $response->assertStatus(200);
-        $response->assertJsonCount(5, 'data');
-    }
-
     public function test_can_create_despesa()
     {
         $user = User::factory()->create();

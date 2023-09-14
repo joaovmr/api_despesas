@@ -16,9 +16,9 @@ class DespesaResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'description' => $this->description,
-            'date' => $this->date,
-            'amount' => $this->amount,
+            'descricao' => $this->descricao,
+            'data' => $this->data,
+            'valor' => $this->valor,
             'user_id' => $this->user_id,
             'user' => new UserResource($this->whenLoaded('user')), 
         ];
