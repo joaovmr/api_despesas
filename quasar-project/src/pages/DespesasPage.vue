@@ -129,27 +129,30 @@ export default {
     };
   },
   async created() {
-    try {
-
-      const response = await api.get("/despesas", {
-      });
-      this.despesas = response.data.data;
-    } catch (error) {
-      console.error("Error fetching Despesas:", error);
-    }
+    await this.fetchDespesas.call(this);
   },
   computed: {
     formattedDespesas() {
       return this.despesas.map((despesa) => {
         return {
           ...despesa,
-          data: new Date(new Date(despesa.data).setDate(new Date(despesa.data).getDate() + 1)).toLocaleDateString("pt-BR"),
+          data: new Date(
+            new Date(despesa.data).setDate(new Date(despesa.data).getDate() + 1)
+          ).toLocaleDateString("pt-BR"),
         };
       });
     },
   },
 
   methods: {
+    async fetchDespesas() {
+      try {
+        const response = await api.get("/despesas");
+        this.despesas = response.data.data;
+      } catch (error) {
+        console.error("Erro buscando Despesas:", error);
+      }
+    },
     deleteDespesa(despesa) {
       this.selectedDespesa = despesa;
       this.deleteDialog = true;
@@ -224,8 +227,8 @@ export default {
         data: this.newDespesa.data,
         valor: parseFloat(this.newDespesa.valor),
       };
-      api.post("/despesas", newDespesaData, { headers }).then((response) => {
-        this.despesas.push(response.data);
+      api.post("/despesas", newDespesaData, { headers }).then(() => {
+        this.fetchDespesas.call(this);
 
         this.newDespesa = {
           descricao: "",

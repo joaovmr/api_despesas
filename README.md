@@ -20,17 +20,20 @@ DB_PASSWORD
 
 E também as variáveis de email:
 
-MAIL_DRIVER
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.googlemail.com
+MAIL_PORT=465
+MAIL_USERNAME={seu_email}
+MAIL_PASSWORD={sua_senha_gerada}
+MAIL_ENCRYPTION=ssl
 
-MAIL_HOST
+Para o email foi escolhido usar o SMTP usando gmail. Para isso é necessário uma conta gmail com autenticação de dois fatores e gerar uma chave para o localhost.
+Basta seguir esse link para a configuração: https://stackoverflow.com/questions/72577189/gmail-smtp-server-stopped-working-as-it-no-longer-support-less-secure-apps
 
-MAIL_PORT
-
-MAIL_USERNAME
-
-MAIL_PASSWORD
-
-MAIL_ENCRYPTION
+Para a fila de notifications adicione QUEUE_CONNECTION=database no seu env.
+Por facilidade a fila está sendo armazenada diretamente no banco na tabela de jobs
+Para que a fila de notificações de email seja executada é necessário iniciar a fila com o comando php artisan queue:work.
+Uma alternativa seria utilizar nohup php artisan queue:work --daemon & para manter a fila rodando em segundo plano.
 
 Além das variáveis padrão contidas no env.example.
 
@@ -42,7 +45,7 @@ A aplicação foi construída usando boas práticas de Laravel. Para os processo
 
 Testes unitários foram implementados e podem ser executados através do comando php artisan test
 
-Para que a fila de notificações de email seja executada é necessário iniciar a fila com o comando php artisan queue:work
+
 
 Possíveis melhorias não implementadas por prioridade:
 

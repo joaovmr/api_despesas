@@ -27,10 +27,9 @@ class DespesaController extends Controller
         ]);
         $despesa->user_id = auth()->id();
         $despesa->save();
-
+        response()->json($despesa, 201);
         Notification::send($despesa->user, new DespesaRegistrada());
-
-        return response()->json($despesa, 201);
+        return;
     }
 
     public function update(DespesaRequest $request, Despesa $despesa)
