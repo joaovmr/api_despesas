@@ -87,6 +87,7 @@ export default {
         const token = response.data.access_token;
         if (token) {
           localStorage.setItem("authToken", token);
+          api.defaults.headers["Authorization"] = `Bearer ${token}`;
           this.$router.push({ path: "despesas" });
         }
       } catch (error) {

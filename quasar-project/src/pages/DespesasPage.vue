@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div>
+      <q-btn @click="logout" label="Logout" class="q-mb-md" />
+    </div>
     <q-table :rows="formattedDespesas" row-key="id" :columns="columns">
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
@@ -153,6 +156,7 @@ export default {
   async created() {
     await this.fetchDespesas.call(this);
   },
+
   computed: {
     formattedDespesas() {
       return this.despesas.map((despesa) => {
@@ -167,6 +171,11 @@ export default {
   },
 
   methods: {
+    async logout() {
+      await api.post("/logout");
+      localStorage.removeItem("authToken");
+      this.$router.push("/");
+    },
     validateDateRule(value) {
       const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
       if (!datePattern.test(value)) {
@@ -174,13 +183,13 @@ export default {
       }
 
       const [, day, month, year] = value.match(datePattern);
-      const date = new Date(year, month - 1, day); 
+      const date = new Date(year, month - 1, day);
 
       if (
         date instanceof Date &&
         !isNaN(date) &&
         date.getDate() === parseInt(day, 10) &&
-        date.getMonth() === parseInt(month, 10) - 1 && 
+        date.getMonth() === parseInt(month, 10) - 1 &&
         date.getFullYear() === parseInt(year, 10) &&
         date <= new Date()
       ) {
